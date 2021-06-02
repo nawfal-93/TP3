@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <title>tp-courses</title>
+</head>
+
+<body>
+    <!-- Titre -->
+    <div class="jumbotron">
+        <h1 class="container">TP-courses</h1>
+    </div>
+    <!-- Application vue -->
+    <div id="app" class="container">
+        <!-- Course à faire -->
+        <input type="text" v-model="name" placeholder="Produit">
+        <button @click="add()" class="btn btn-primary">Ajouter</button>
+        <!-- Liste des courses -->
+        <ul>
+            <!-- Pour chaque produits vérifier son état et afficher le produit -->
+            <li v-for="(product, index) in products"
+                v-bind:class="{ 'list-group-item-success': product.purchased == true, 'list-group-item-danger': product.purchased == false}"
+                class="list-group-item">
+                <!-- Nom du produit -->
+                <h4 v-if="product.purchased == false" style="text-decoration: line-through;">{{ product.name }}</h4>
+                <h4 v-else>{{ product.name }}</h4>
+                <!-- Boutons d'action -->
+                <button @click="purchase(product)" class="btn btn-primary">Action</button>
+                <button @click="del(index)" class="ml-2 btn btn-danger">Supprimer</button>
+            </li>
+        </ul>
+    </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        //  le local storage
+        if (localStorage.products == undefined) {
+            products = [{
+                    name: 'Kiwi',
+                    purchased: false
+                },
+                {
+                    name: 'Salade',
+                    purchased: false
+                },
+                {
+                    name: 'chocolat',
+                    purchased: false
+                },
+            ];
+            localStorage.products = JSON.stringify(products);
+        }
+        // Création de notre application Vue
+        var app = new Vue({
+            // On s'attache à l'élément du DOM souhaité
+            el: '#app',
+            // On déclare les données réactives
+            data: {
+                // Récupération des données du local storage
+                products: JSON.parse(localStorage.products),
+                name: ''
+            },
+            methods: {
+                // changer l'état un produit
+                purchase(product) {
+                    // Si le produit est acheté, le rend non-acheté et inversement
+                    if (product.purchased == true) {
+                        product.purchased = false;
+                    } else {
+                        product.purchased = true;
+                    }
+                    localStorage.products = JSON.stringify(this.products);
+                },
+                // ajouter un produit dans le local storage
+                add() {
+                    let product = {};
+                    product.name = this.name;
+                    product.purchased = false;
+
+                    this.products.push(product);
+                    localStorage.products = JSON.stringify(this.products);
+                },
+                // supprimer un produit dans le local storage
+                del(index) {
+                    this.products.splice(index, 1);
+                    localStorage.products = JSON.stringify(this.products);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
